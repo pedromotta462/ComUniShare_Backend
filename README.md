@@ -1,6 +1,7 @@
 # ComUniShare Backend
 
 This repository represents the backend application of ComUniShare project, built on Java SpringBoot.
+(on building)
 
 [Frontend Repository](https://github.com/pedromotta462/ComUniShare/)
 
