@@ -1,4 +1,95 @@
-# Getting Started
+# ComUniShare Backend
+
+This repository represents the backend application of ComUniShare project, built on Java SpringBoot.
+
+[Frontend Repository](https://github.com/pedromotta462/ComUniShare/)
+
+## UML Diagram
+
+```mermaid
+classDiagram
+  class Usuario {
+    -id: int
+    -nome: string
+    -email: string
+    -senha: string
+    -endereco: string
+    -contato: string
+    -perfil: string
+    +registrar(email: string, senha: string)
+    +autenticar(email: string, senha: string)
+    +listarItensCompartilhados()
+    +listarServicosOferecidos()
+    +realizarTransacao(compartilhavel: Compartilhavel)
+    +iniciarChat(destinatario: Usuario)
+    +enviarMensagem(destinatario: Usuario, mensagem: string)
+    +criarCompartilhavel(tipo: string, nome: string, descricao: string, preco: double)
+  }
+
+  class Compartilhavel {
+    -id: int
+    -nome: string
+    -descricao: string
+    -dono: Usuario
+    -tipo: string
+    -preco: double
+    +listar()
+    +adicionar()
+    +remover()
+    +compartilhar(redesSociais: string)
+  }
+
+  class Transacao {
+    -id: int
+    -data: Date
+    -usuarioRequisitante: Usuario
+    -usuarioOfertante: Usuario
+    -compartilhavel: Compartilhavel
+    +registrar()
+    +aprovar()
+    +rejeitar()
+    +finalizar()
+  }
+
+  class Feedback {
+    -id: int
+    -avaliacao: int
+    -comentario: string
+    -usuario: Usuario
+    -compartilhavel: Compartilhavel
+    +registrar()
+    +editar()
+    +excluir()
+  }
+
+  class Chat {
+    -id: int
+    -mensagens: string[]
+    -participantes: Usuario[]
+    +iniciar(participante1: Usuario, participante2: Usuario)
+    +enviarMensagem(remetente: Usuario, mensagem: string)
+  }
+
+  class NotificacoesService {
+    -id: int
+    -titulo: string
+    -descricao: string
+    -data: Date
+    +enviarNotificacaoEmail(destinatario: Usuario)
+  }
+
+  Usuario "1" -- "N" Compartilhavel : possui
+  Usuario "1" -- "N" Transacao : participa
+  Usuario "1" -- "N" Feedback : escreve
+  Usuario "1" -- "N" Chat : inicia, enviaMensagem
+  Transacao "1" -- "1" Compartilhavel : inclui
+  Transacao "1" -- "N" Usuario : requisitante
+  Transacao "1" -- "N" Usuario : ofertante
+  Feedback "1" -- "1" Compartilhavel : referenteA
+  Chat "N" -- "N" Usuario : participa, enviaMensagem
+  NotificacoesService "N" -- "1" Usuario : enviarNotificacaoEmail
+
+```
 
 ### Reference Documentation
 For further reference, please consider the following sections:
@@ -12,16 +103,4 @@ For further reference, please consider the following sections:
 * [Spring Security](https://docs.spring.io/spring-boot/docs/3.1.5/reference/htmlsingle/index.html#web.security)
 * [Validation](https://docs.spring.io/spring-boot/docs/3.1.5/reference/htmlsingle/index.html#io.validation)
 * [Spring Boot DevTools](https://docs.spring.io/spring-boot/docs/3.1.5/reference/htmlsingle/index.html#using.devtools)
-
-### Guides
-The following guides illustrate how to use some features concretely:
-
-* [Accessing Data with JPA](https://spring.io/guides/gs/accessing-data-jpa/)
-* [Building a RESTful Web Service](https://spring.io/guides/gs/rest-service/)
-* [Serving Web Content with Spring MVC](https://spring.io/guides/gs/serving-web-content/)
-* [Building REST services with Spring](https://spring.io/guides/tutorials/rest/)
-* [Securing a Web Application](https://spring.io/guides/gs/securing-web/)
-* [Spring Boot and OAuth2](https://spring.io/guides/tutorials/spring-boot-oauth2/)
-* [Authenticating a User with LDAP](https://spring.io/guides/gs/authenticating-ldap/)
-* [Validation](https://spring.io/guides/gs/validating-form-input/)
 
