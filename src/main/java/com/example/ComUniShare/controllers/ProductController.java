@@ -1,9 +1,11 @@
 package com.example.ComUniShare.controllers;
 
 import com.example.ComUniShare.domain.product.Product;
+import com.example.ComUniShare.domain.product.ProductRequestDTO;
 import com.example.ComUniShare.domain.product.ProductResponseDTO;
 import com.example.ComUniShare.repositories.ProductRepository;
 import com.example.ComUniShare.services.product.ProductService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -11,6 +13,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @RestController()
@@ -23,19 +26,27 @@ public class ProductController {
     @Autowired
     ProductRepository repository;
 
+    //ok
     @GetMapping("/{productId}")
-    public ResponseEntity<Product> getProductById(@PathVariable String productId) {
+    public ResponseEntity<ProductResponseDTO> getProductById(@PathVariable String productId) {
         Product product = productService.findById(productId);
-        return ResponseEntity.ok(product);
+
+        if (product == null) {
+            return ResponseEntity.notFound().build();
+        }
+
+        return ResponseEntity.ok(new ProductResponseDTO(product));
     }
 
+    //ok
     @GetMapping
-    public ResponseEntity getAllProducts(){
-        List<ProductResponseDTO> productList = this.repository.findAll().stream().map(ProductResponseDTO::new).toList();
+    public ResponseEntity<List<ProductResponseDTO>> getAllProducts(){
+        List<ProductResponseDTO> productList = productService.findAllProducts();
 
         return ResponseEntity.ok(productList);
     }
 
+    //ok
     @GetMapping("/user")
     public ResponseEntity<List<ProductResponseDTO>> getProductsByCurrentUser() {
         List<Product> products = productService.findProductsByUser();
@@ -43,21 +54,26 @@ public class ProductController {
         return ResponseEntity.ok(productDTOs);
     }
 
+    //ok
     @PostMapping("/create")
-    public ResponseEntity<String> createProductForUser(@RequestBody Product product) {
+    public ResponseEntity<String> createProductForUser(@RequestBody @Valid ProductRequestDTO product) {
         ResponseEntity<String> response = productService.createProductForUser(product);
         return ResponseEntity.status(response.getStatusCode()).body(response.getBody());
     }
 
+    //ok, só n atualiza o type pq é enum
     @PutMapping("/{productId}")
-    public ResponseEntity<String> updateProduct(@PathVariable String productId, @RequestBody Product product) {
-        product.setId(productId);
-        productService.updateProduct(product);
-        return ResponseEntity.ok("Produto atualizado com sucesso!");
+    public ResponseEntity<String> updateProduct(@PathVariable String productId, @RequestBody Map<String, Object> updates) {
+        return productService.updateProduct(productId, updates);
     }
 
+    //ok
     @DeleteMapping("/{productId}")
     public ResponseEntity<String> deleteProduct(@PathVariable String productId) {
+        Product product = productService.findById(productId);
+        if (product == null) {
+            return ResponseEntity.notFound().build();
+        }
         productService.deleteProduct(productId);
         return ResponseEntity.ok("Produto excluído com sucesso!");
     }

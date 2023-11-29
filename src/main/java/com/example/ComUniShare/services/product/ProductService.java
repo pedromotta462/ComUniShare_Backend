@@ -1,6 +1,8 @@
 package com.example.ComUniShare.services.product;
 
 import com.example.ComUniShare.domain.product.Product;
+import com.example.ComUniShare.domain.product.ProductRequestDTO;
+import com.example.ComUniShare.domain.product.ProductResponseDTO;
 import com.example.ComUniShare.domain.user.User;
 import com.example.ComUniShare.repositories.ProductRepository;
 import com.example.ComUniShare.services.user.UserService;
@@ -11,7 +13,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class ProductService implements IproductService {
@@ -27,8 +33,8 @@ public class ProductService implements IproductService {
     }
 
     @Override
-    public List<Product> findAllProducts() {
-        return productRepository.findAll();
+    public List<ProductResponseDTO> findAllProducts() {
+        return productRepository.findAll().stream().map(ProductResponseDTO::new).toList();
     }
 
     @Override
@@ -37,9 +43,58 @@ public class ProductService implements IproductService {
     }
 
     @Override
-    public void updateProduct(Product product) {
-        productRepository.save(product);
+    public ResponseEntity<String> updateProduct(String productId, Map<String, Object> updates) {
+        Product existingProduct = findById(productId);
+
+        if (existingProduct == null) {
+            return new ResponseEntity<>("Produto não encontrado com ID: " + productId, HttpStatus.NOT_FOUND);
+        }
+
+        // Aplica as atualizações nos campos existentes
+        for (Map.Entry<String, Object> entry : updates.entrySet()) {
+            String fieldName = entry.getKey();
+            Object value = entry.getValue();
+
+            // Usa reflexão para obter o método setter do campo
+            try {
+                String methodName = "set" + fieldName.substring(0, 1).toUpperCase() + fieldName.substring(1);
+                Method[] methods = Product.class.getMethods();
+
+                // Encontra o método setter correspondente ao campo
+                Method method = Arrays.stream(methods)
+                        .filter(m -> m.getName().equals(methodName) && m.getParameterCount() == 1)
+                        .findFirst()
+                        .orElseThrow(NoSuchMethodException::new);
+
+                // Converte o valor para o tipo esperado pelo método setter
+                Object convertedValue = convertValue(value, method.getParameterTypes()[0]);
+
+                // Chama o método setter com o valor adequado
+                method.invoke(existingProduct, convertedValue);
+
+                System.out.println("method:" + method + " methodname:" + methodName);
+            } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
+                return ResponseEntity.badRequest().body("Falha ao atualizar o campo: " + fieldName + " com o valor " + value + " \n " + e);
+            }
+        }
+
+        // Persiste as alterações
+        saveProduct(existingProduct);
+
+        return ResponseEntity.ok("Produto atualizado com sucesso!");
     }
+
+    private Object convertValue(Object value, Class<?> targetType) {
+        if (targetType.equals(Integer.class) && value instanceof String) {
+            return Integer.parseInt((String) value);
+        } else if (targetType.isEnum() && value instanceof String) {
+            // Converte para enumeração
+            return Enum.valueOf((Class<? extends Enum>) targetType, (String) value);
+        } else {
+            return value;
+        }
+    }
+
 
     @Override
     public void deleteProduct(String productId) {
@@ -51,24 +106,21 @@ public class ProductService implements IproductService {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String username = authentication.getName();
 
-        // Use o serviço UserService para obter o usuário pelo nome de usuário
         User user = userService.findUserByLogin(username);
 
-        // Verifique se o usuário foi encontrado
         if (user != null) {
-            // Obtenha a lista de produtos associados a esse usuário
             return user.getProducts();
         } else {
-            // Retorne uma lista vazia se o usuário não for encontrado
             return List.of();
         }
     }
 
-    public ResponseEntity<String> createProductForUser(Product product) {
+    public ResponseEntity<String> createProductForUser(ProductRequestDTO prod) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String currentUserId = authentication.getName();
 
         User user = userService.findUserByLogin(currentUserId);
+        Product product = new Product(prod);
         if (user != null) {
             product.setUser(user);
             user.getProducts().add(product);
