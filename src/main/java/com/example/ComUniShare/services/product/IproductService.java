@@ -1,6 +1,7 @@
 package com.example.ComUniShare.services.product;
 
 import com.example.ComUniShare.domain.product.Product;
+import com.example.ComUniShare.domain.product.ProductRequestDTO;
 import com.example.ComUniShare.domain.product.ProductResponseDTO;
 import org.springframework.http.ResponseEntity;
 
@@ -19,6 +20,8 @@ public interface IproductService {
     void deleteProduct(String productId);
 
     List<Product> findProductsByUser();
+
+    ResponseEntity<String> createProductForUser(ProductRequestDTO prod);
 }
 
 
