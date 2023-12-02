@@ -8,10 +8,10 @@ import com.example.ComUniShare.services.product.ProductService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -56,7 +56,14 @@ public class ProductController {
 
     //ok
     @PostMapping("/create")
-    public ResponseEntity<String> createProductForUser(@RequestBody @Valid ProductRequestDTO product) {
+    public ResponseEntity<String> createProductForUser(@RequestBody @Valid ProductRequestDTO product, BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            Map<String, String> errors = new HashMap<>();
+            bindingResult.getFieldErrors().forEach(error -> errors.put(error.getField(), error.getDefaultMessage()));
+
+            return ResponseEntity.badRequest().body("Validation failed: " + errors.toString());
+        }
+
         ResponseEntity<String> response = productService.createProductForUser(product);
         return ResponseEntity.status(response.getStatusCode()).body(response.getBody());
     }

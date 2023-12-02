@@ -1,6 +1,14 @@
 package com.example.ComUniShare.domain.product;
 
-public record ProductResponseDTO(String id, String name, String description, String type, Integer price, String ownerId, String ownerName) {
+public record ProductResponseDTO(
+        String id,
+        String name,
+        String description,
+        String type,
+        Integer price,
+        String ownerId,
+        String ownerName
+) {
     public ProductResponseDTO(Product product){
         this(
                 product.getId(),
