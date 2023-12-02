@@ -20,15 +20,22 @@ import java.util.List;
 @Service
 public class FeedbackService implements IfeedbackService{
 
-    @Autowired
-    private  FeedbackRepository feedbackRepository;
+    private final UserService userService;
+
+    private final ProductService productService;
+
+    private final FeedbackRepository feedbackRepository;
 
     @Autowired
-    private  UserService userService;
-
-    @Autowired
-    private  ProductService productService;
-
+    public FeedbackService(
+            FeedbackRepository feedbackRepository,
+            UserService userService,
+            ProductService productService
+    ) {
+        this.feedbackRepository = feedbackRepository;
+        this.userService = userService;
+        this.productService = productService;
+    }
 
     @Override
     public List<FeedbackResponseDTO> getAllFeedbacks() {

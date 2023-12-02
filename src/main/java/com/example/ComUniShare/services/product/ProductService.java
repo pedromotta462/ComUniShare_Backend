@@ -21,11 +21,15 @@ import java.util.Map;
 
 @Service
 public class ProductService implements IproductService {
-    @Autowired
-    private ProductRepository productRepository;
+    private final ProductRepository productRepository;
+
+    private final UserService userService;
 
     @Autowired
-    private UserService userService;
+    public ProductService(ProductRepository productRepository, UserService userService){
+        this.productRepository = productRepository;
+        this.userService = userService;
+    }
 
     @Override
     public Product findById(String productId) {
@@ -50,26 +54,21 @@ public class ProductService implements IproductService {
             return new ResponseEntity<>("Produto não encontrado com ID: " + productId, HttpStatus.NOT_FOUND);
         }
 
-        // Aplica as atualizações nos campos existentes
         for (Map.Entry<String, Object> entry : updates.entrySet()) {
             String fieldName = entry.getKey();
             Object value = entry.getValue();
 
-            // Usa reflexão para obter o método setter do campo
             try {
                 String methodName = "set" + fieldName.substring(0, 1).toUpperCase() + fieldName.substring(1);
                 Method[] methods = Product.class.getMethods();
 
-                // Encontra o método setter correspondente ao campo
                 Method method = Arrays.stream(methods)
                         .filter(m -> m.getName().equals(methodName) && m.getParameterCount() == 1)
                         .findFirst()
                         .orElseThrow(NoSuchMethodException::new);
 
-                // Converte o valor para o tipo esperado pelo método setter
                 Object convertedValue = convertValue(value, method.getParameterTypes()[0]);
 
-                // Chama o método setter com o valor adequado
                 method.invoke(existingProduct, convertedValue);
 
                 System.out.println("method:" + method + " methodname:" + methodName);
@@ -78,7 +77,6 @@ public class ProductService implements IproductService {
             }
         }
 
-        // Persiste as alterações
         saveProduct(existingProduct);
 
         return ResponseEntity.ok("Produto atualizado com sucesso!");

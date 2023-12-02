@@ -17,8 +17,13 @@ import java.util.Map;
 @RestController
 @RequestMapping("/api/feedbacks")
 public class FeedbackController {
+
+    private final FeedbackService feedbackService;
+
     @Autowired
-    private FeedbackService feedbackService;
+    public FeedbackController(FeedbackService feedbackService) {
+        this.feedbackService = feedbackService;
+    }
 
     //ok
     @GetMapping

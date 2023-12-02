@@ -1,6 +1,5 @@
 package com.example.ComUniShare.services.user;
 
-import com.example.ComUniShare.domain.product.Product;
 import com.example.ComUniShare.domain.user.User;
 import com.example.ComUniShare.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,8 +17,13 @@ import java.util.Map;
 
 @Service
 public class UserService implements IuserService{
+
+    private final UserRepository userRepository;
+
     @Autowired
-    private UserRepository userRepository; // Você precisará criar este repositório
+    public UserService(UserRepository userRepository){
+        this.userRepository = userRepository;
+    }
 
     @Override
     public User findById(String userId) {
@@ -61,26 +65,21 @@ public class UserService implements IuserService{
             return new ResponseEntity<>("Usuário não encontrado com ID: " + userId, HttpStatus.NOT_FOUND);
         }
 
-        // Aplica as atualizações nos campos existentes
         for (Map.Entry<String, Object> entry : updates.entrySet()) {
             String fieldName = entry.getKey();
             Object value = entry.getValue();
 
-            // Usa reflexão para obter o método setter do campo
             try {
                 String methodName = "set" + fieldName.substring(0, 1).toUpperCase() + fieldName.substring(1);
                 Method[] methods = User.class.getMethods();
 
-                // Encontra o método setter correspondente ao campo
                 Method method = Arrays.stream(methods)
                         .filter(m -> m.getName().equals(methodName) && m.getParameterCount() == 1)
                         .findFirst()
                         .orElseThrow(NoSuchMethodException::new);
 
-                // Converte o valor para o tipo esperado pelo método setter
                 Object convertedValue = convertValue(value, method.getParameterTypes()[0]);
 
-                // Chama o método setter com o valor adequado
                 method.invoke(existingUser, convertedValue);
 
                 System.out.println("method:" + method + " methodname:" + methodName);
@@ -89,7 +88,6 @@ public class UserService implements IuserService{
             }
         }
 
-        // Persiste as alterações
         saveUser(existingUser);
 
         return ResponseEntity.ok("Usuário atualizado com sucesso!");
