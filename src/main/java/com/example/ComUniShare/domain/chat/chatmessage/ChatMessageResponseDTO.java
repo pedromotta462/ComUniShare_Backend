@@ -1,5 +1,6 @@
 package com.example.ComUniShare.domain.chat.chatmessage;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public record ChatMessageResponseDTO(
@@ -7,7 +8,7 @@ public record ChatMessageResponseDTO(
         String senderId,
         String senderName,
         String message,
-        Date sentAt
+        String sentAt
 ) {
     public ChatMessageResponseDTO(ChatMessage chatMessage){
         this(
@@ -15,7 +16,13 @@ public record ChatMessageResponseDTO(
                 chatMessage.getSender() != null ? chatMessage.getSender().getId() : null,
                 chatMessage.getSender() != null ? chatMessage.getSender().getName() : null,
                 chatMessage.getMessage(),
-                chatMessage.getSentAt()
+                formatDateTime(chatMessage.getSentAt())
         );
     }
+
+    private static String formatDateTime(Date date) {
+        SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
+        return sdf.format(date);
+    }
 }
+
