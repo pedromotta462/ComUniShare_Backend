@@ -5,6 +5,9 @@ This repository represents the backend application of ComUniShare project, built
 
 [Frontend Repository](https://github.com/pedromotta462/ComUniShare/)
 
+[API Documentation](https://apicomunishare.azurewebsites.net/swagger-ui/index.html)
+PS: when in swagger-ui, just search for /v3/api-docs on search bar, then will appear the informations.
+
 ## UML Diagram
 
 ```mermaid

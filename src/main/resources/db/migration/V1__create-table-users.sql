@@ -5,5 +5,5 @@ CREATE TABLE users (
     password TEXT NOT NULL,
     fone TEXT NOT NULL,
     address TEXT NOT NULL,
-    role TEXT NOT NULL
+    role SMALLINT NOT NULL
 );
