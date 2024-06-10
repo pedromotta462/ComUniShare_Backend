@@ -8,6 +8,9 @@ This repository represents the backend application of ComUniShare project, built
 [API Documentation](https://comunishare.azurewebsites.net/swagger-ui/index.html)
 PS: when in swagger-ui, just search for /v3/api-docs on search bar, then will appear the informations.
 
+[API Documentation Json](https://comunishare.azurewebsites.net/v3/api-docs)
+If you prefer, its possible find the documentation in json file on this link, which you can use to import for another software to test, like postman or insomnia
+
 ## UML Diagram
 
 ```mermaid
