@@ -14,87 +14,57 @@ If you prefer, its possible find the documentation in json file on this link, wh
 ## UML Diagram
 
 ```mermaid
-classDiagram
-  class Usuario {
-    -id: int
-    -nome: string
-    -email: string
-    -senha: string
-    -endereco: string
-    -contato: string
-    -perfil: string
-    +registrar(email: string, senha: string)
-    +autenticar(email: string, senha: string)
-    +listarItensCompartilhados()
-    +listarServicosOferecidos()
-    +realizarTransacao(compartilhavel: Compartilhavel)
-    +iniciarChat(destinatario: Usuario)
-    +enviarMensagem(destinatario: Usuario, mensagem: string)
-    +criarCompartilhavel(tipo: string, nome: string, descricao: string, preco: double)
-  }
+erDiagram
+    USERS {
+        TEXT id PK "PRIMARY KEY UNIQUE NOT NULL"
+        TEXT name "NOT NULL"
+        TEXT login "NOT NULL UNIQUE"
+        TEXT password "NOT NULL"
+        TEXT fone "NOT NULL"
+        TEXT address "NOT NULL"
+        SMALLINT role "NOT NULL"
+    }
+    
+    PRODUCTS {
+        TEXT id PK "PRIMARY KEY UNIQUE NOT NULL"
+        TEXT name "NOT NULL"
+        TEXT description "NOT NULL"
+        TEXT type "NOT NULL"
+        INTEGER price "NOT NULL"
+        TEXT user_id FK "REFERENCES users(id)"
+    }
+    
+    FEEDBACKS {
+        TEXT id PK "PRIMARY KEY UNIQUE NOT NULL"
+        TEXT comment "NOT NULL"
+        INTEGER rating "NOT NULL"
+        TEXT user_id FK "REFERENCES users(id)"
+        TEXT product_id FK "REFERENCES products(id)"
+        TIMESTAMPTZ created_at "NOT NULL"
+    }
+    
+    CHATS {
+        TEXT id PK "PRIMARY KEY UNIQUE NOT NULL"
+        TEXT user1_id FK "NOT NULL"
+        TEXT user2_id FK "NOT NULL"
+    }
+    
+    CHAT_MESSAGES {
+        TEXT id PK "PRIMARY KEY UNIQUE NOT NULL"
+        TEXT chat_id FK "NOT NULL"
+        TEXT sender_id FK "NOT NULL"
+        TEXT message "NOT NULL"
+        TIMESTAMPTZ sent_at "NOT NULL"
+    }
+    
+    USERS ||--o{ PRODUCTS : "user_id"
+    USERS ||--o{ FEEDBACKS : "user_id"
+    PRODUCTS ||--o{ FEEDBACKS : "product_id"
+    USERS ||--o{ CHATS : "user1_id"
+    USERS ||--o{ CHATS : "user2_id"
+    CHATS ||--o{ CHAT_MESSAGES : "chat_id"
+    USERS ||--o{ CHAT_MESSAGES : "sender_id"
 
-  class Compartilhavel {
-    -id: int
-    -nome: string
-    -descricao: string
-    -dono: Usuario
-    -tipo: string
-    -preco: double
-    +listar()
-    +adicionar()
-    +remover()
-    +compartilhar(redesSociais: string)
-  }
-
-  class Transacao {
-    -id: int
-    -data: Date
-    -usuarioRequisitante: Usuario
-    -usuarioOfertante: Usuario
-    -compartilhavel: Compartilhavel
-    +registrar()
-    +aprovar()
-    +rejeitar()
-    +finalizar()
-  }
-
-  class Feedback {
-    -id: int
-    -avaliacao: int
-    -comentario: string
-    -usuario: Usuario
-    -compartilhavel: Compartilhavel
-    +registrar()
-    +editar()
-    +excluir()
-  }
-
-  class Chat {
-    -id: int
-    -mensagens: string[]
-    -participantes: Usuario[]
-    +iniciar(participante1: Usuario, participante2: Usuario)
-    +enviarMensagem(remetente: Usuario, mensagem: string)
-  }
-
-  class NotificacoesService {
-    -id: int
-    -titulo: string
-    -descricao: string
-    -data: Date
-    +enviarNotificacaoEmail(destinatario: Usuario)
-  }
-
-  Usuario "1" -- "N" Compartilhavel : possui
-  Usuario "1" -- "N" Transacao : participa
-  Usuario "1" -- "N" Feedback : escreve
-  Usuario "1" -- "N" Chat : inicia, enviaMensagem
-  Transacao "1" -- "1" Compartilhavel : inclui
-  Transacao "1" -- "N" Usuario : requisitante
-  Transacao "1" -- "N" Usuario : ofertante
-  Feedback "1" -- "1" Compartilhavel : referenteA
-  Chat "N" -- "N" Usuario : participa, enviaMensagem
-  NotificacoesService "N" -- "1" Usuario : enviarNotificacaoEmail
 
 ```
 
