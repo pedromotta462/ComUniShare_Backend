@@ -5,6 +5,8 @@ This repository represents the backend application of ComUniShare project, built
 
 [Frontend Repository](https://github.com/pedromotta462/ComUniShare/)
 
+[Slide Presentation](https://www.canva.com/design/DAGHxPUyld8/n-NBz2yD393-Fc9TnD-60w/edit?utm_content=DAGHxPUyld8&utm_campaign=designshare&utm_medium=link2&utm_source=sharebutton)
+
 [API Documentation](https://comunishare.azurewebsites.net/swagger-ui/index.html)
 PS: when in swagger-ui, just search for /v3/api-docs on search bar, then will appear the informations.
 
