@@ -7,6 +7,8 @@ This repository represents the backend application of ComUniShare project, built
 
 [Frontend Repository](https://github.com/pedromotta462/ComUniShare/)
 
+[Youtube Presentation](https://www.youtube.com/watch?v=MzVGpceEe6c)
+
 [Slide Presentation](https://www.canva.com/design/DAGHxPUyld8/n-NBz2yD393-Fc9TnD-60w/edit?utm_content=DAGHxPUyld8&utm_campaign=designshare&utm_medium=link2&utm_source=sharebutton)
 
 [API Documentation](https://comunishare.azurewebsites.net/swagger-ui/index.html)
